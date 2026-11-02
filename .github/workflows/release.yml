@@ -103,6 +103,17 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: bun tauri build --target ${{ matrix.target }} --bundles ${{ matrix.bundles }} --ci
+      # The bundler only signs the AppImage; .deb installs need their own signature to update in-app.
+      - name: Sign .deb for in-app updates
+        if: runner.os == 'Linux'
+        working-directory: client
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: |
+          for deb in src-tauri/target/${{ matrix.target }}/release/bundle/deb/*.deb; do
+            [ -f "$deb.sig" ] || bun tauri signer sign -p "$TAURI_SIGNING_PRIVATE_KEY_PASSWORD" "$deb"
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}

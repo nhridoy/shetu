@@ -32,6 +32,8 @@ async function fixture() {
     await writeFile(join(dir, name), platform);
     await writeFile(join(dir, `${name}.sig`), signature(platform));
   }
+  await writeFile(join(assetsDir, 'linux-x86_64', 'Terra.deb'), 'package');
+  await writeFile(join(assetsDir, 'linux-x86_64', 'Terra.deb.sig'), signature('linux-x86_64-deb'));
   return { assetsDir, outputDir };
 }
 
@@ -40,7 +42,12 @@ test('builds a complete manifest with literal signatures and unique URLs', async
   await buildUpdateManifest({ version: '1.0.1', tag: 'v1.0.1', assetsDir, outputDir });
   const manifest = JSON.parse(await readFile(join(outputDir, 'terra-latest.json'), 'utf8'));
   assert.equal(manifest.version, '1.0.1');
-  assert.deepEqual(Object.keys(manifest.platforms).sort(), Object.keys(bundles).sort());
+  assert.deepEqual(Object.keys(manifest.platforms).sort(), [...Object.keys(bundles), 'linux-x86_64-deb'].sort());
+  assert.equal(manifest.platforms['linux-x86_64-deb'].signature, signature('linux-x86_64-deb'));
+  assert.equal(
+    manifest.platforms['linux-x86_64-deb'].url,
+    'https://github.com/nhridoy/terra/releases/download/v1.0.1/linux-x86_64-Terra.deb',
+  );
   assert.equal(manifest.platforms['linux-x86_64'].signature, signature('linux-x86_64'));
   assert.equal(
     manifest.platforms['darwin-aarch64'].url,
@@ -56,6 +63,15 @@ test('rejects a missing required signature without publishing a manifest', async
     /signature/i,
   );
   await assert.rejects(readFile(join(outputDir, 'terra-latest.json')));
+});
+
+test('rejects a .deb without a signature so .deb installs never get an unsigned update', async () => {
+  const { assetsDir, outputDir } = await fixture();
+  await writeFile(join(assetsDir, 'linux-x86_64', 'Terra.deb.sig'), '');
+  await assert.rejects(
+    buildUpdateManifest({ version: '1.0.1', tag: 'v1.0.1', assetsDir, outputDir }),
+    /signature/i,
+  );
 });
 
 test('rejects non-minisign text and truncated base64 signatures', async () => {

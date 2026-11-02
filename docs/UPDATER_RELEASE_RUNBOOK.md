@@ -1,6 +1,6 @@
 # Desktop updater release runbook
 
-Terra checks the monorepo's latest GitHub Release for `terra-latest.json`. Windows NSIS, macOS app, and Linux AppImage builds can install signed updates in-app. Linux `.deb` builds open the release page for package-managed installation. Development builds make no network update request.
+Terra checks the monorepo's latest GitHub Release for `terra-latest.json`. Windows NSIS, macOS app, Linux AppImage, and Linux `.deb` builds install signed updates in-app. `.deb` installs use the manifest's `linux-x86_64-deb` entry and ask for the admin password (pkexec) to run `dpkg -i`. Builds older than 0.0.2 open the release page for `.deb` installs instead. Development builds make no network update request.
 
 ## One-time setup
 
@@ -42,7 +42,7 @@ The monorepo's `Release` workflow runs when a `v*` tag is pushed. It reads the e
 
 3. Monitor **Actions → Release** until all jobs succeed. Stable releases are published as non-prereleases and update the `latest` GHCR tag.
 4. Check the same release assets and updater manifest listed above. The manifest's `platforms` entries must point to the exact assets and contain signature **contents**, not paths.
-5. Install a previous signed build and use Settings → Check for updates on Windows, macOS Intel/Apple Silicon, and Linux AppImage. Confirm download progress, separate install action, relaunch, and displayed new version. For `.deb`, confirm the release page opens and no AppImage install is attempted.
+5. Install a previous signed build and use Settings → Check for updates on Windows, macOS Intel/Apple Silicon, Linux AppImage, and Linux `.deb`. Confirm download progress, separate install action, relaunch, and displayed new version. For `.deb`, confirm the password prompt appears and `dpkg -l terra` shows the new version.
 
 Before public distribution, test an unavailable network and a deliberately invalid signature using a disposable test release/environment. The current app must remain usable. Do not alter production `terra-latest.json` merely to run this test.
 
