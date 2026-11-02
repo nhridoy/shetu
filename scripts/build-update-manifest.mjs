@@ -8,12 +8,15 @@ import { mkdtemp, rm } from 'node:fs/promises';
 
 const REPOSITORY = 'nhridoy/terra';
 const execFileAsync = promisify(execFile);
-const REQUIRED = {
-  'linux-x86_64': '.AppImage',
-  'windows-x86_64': '.exe',
-  'darwin-x86_64': '.app.tar.gz',
-  'darwin-aarch64': '.app.tar.gz',
-};
+// [manifest key, artifact directory, bundle extension]. The updater looks up
+// `{os}-{arch}-{bundle_type}` first, so .deb installs get their own entry.
+const REQUIRED = [
+  ['linux-x86_64', 'linux-x86_64', '.AppImage'],
+  ['linux-x86_64-deb', 'linux-x86_64', '.deb'],
+  ['windows-x86_64', 'windows-x86_64', '.exe'],
+  ['darwin-x86_64', 'darwin-x86_64', '.app.tar.gz'],
+  ['darwin-aarch64', 'darwin-aarch64', '.app.tar.gz'],
+];
 
 async function filesUnder(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -69,8 +72,8 @@ export async function buildUpdateManifest({ version, tag, assetsDir, outputDir, 
     throw new Error('release tag/version mismatch');
   const platforms = {};
   const staged = [];
-  for (const [platform, extension] of Object.entries(REQUIRED)) {
-    const dir = join(assetsDir, platform);
+  for (const [platform, dirName, extension] of REQUIRED) {
+    const dir = join(assetsDir, dirName);
     let files;
     try {
       files = await filesUnder(dir);
@@ -85,7 +88,7 @@ export async function buildUpdateManifest({ version, tag, assetsDir, outputDir, 
     const signature = (await readFile(signatureFile, 'utf8')).trim();
     const signatureBytes = decodeSignature(signature);
     if (publicKey) await verifyWithMinisign(bundle, signatureBytes, publicKey);
-    const assetName = `${platform}-${basename(bundle)}`;
+    const assetName = `${dirName}-${basename(bundle)}`;
     platforms[platform] = {
       signature,
       url: `https://github.com/${REPOSITORY}/releases/download/${tag}/${encodeURIComponent(assetName)}`,
@@ -93,14 +96,13 @@ export async function buildUpdateManifest({ version, tag, assetsDir, outputDir, 
     const distributable = files.filter((path) =>
       path === bundle ||
       path === signatureFile ||
-      (platform.startsWith('linux-') && path.endsWith('.deb')) ||
-      (platform.startsWith('darwin-') && path.endsWith('.dmg')),
+      (dirName.startsWith('darwin-') && path.endsWith('.dmg')),
     );
     for (const path of distributable) {
       const name = basename(path);
       if (name === '.' || name === '..' || name.includes('/') || name.includes('\\'))
         throw new Error(`unsafe asset name: ${name}`);
-      staged.push({ source: path, destination: `${platform}-${name}` });
+      staged.push({ source: path, destination: `${dirName}-${name}` });
     }
   }
   const names = staged.map((asset) => asset.destination);
