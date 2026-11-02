@@ -51,17 +51,21 @@ go run ./cmd/terra-server
 
 ### Docker
 
-The server image is published as `ghcr.io/nhridoy/terra-server`.
+The server image is published as `ghcr.io/nhridoy/terra-server` for `linux/amd64` and `linux/arm64`. Production uses `server/docker-compose.prod.yml`, which pulls that image and never builds. The file is self-contained, so a host only needs it and a `.env`:
 
 ```bash
 cd server
 cp .env.example .env
-# Set JWT_SECRET, BASE_URL, and a production DATABASE_URL in .env
-docker compose up -d --build
+# Set JWT_SECRET, BASE_URL, and a production DATABASE_URL in .env.
+# Optionally pin a release with TERRA_IMAGE_TAG=0.0.3 (default: latest stable).
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+```
 
-# Or run the published image instead of building locally
-docker compose pull
-docker compose up -d
+To build and run the image from your checkout instead, use the default `docker-compose.yml`. It reuses the production settings and tags the build `terra-server:local`:
+
+```bash
+docker compose up -d --build
 ```
 
 SQLite is supported for local development. Production deployments must use PostgreSQL, for example:
