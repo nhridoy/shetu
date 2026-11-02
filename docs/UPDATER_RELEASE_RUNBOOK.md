@@ -1,53 +1,73 @@
-# Desktop updater release runbook
+# Release runbook
 
-Terra checks the monorepo's latest GitHub Release for `terra-latest.json`. Windows NSIS, macOS app, Linux AppImage, and Linux `.deb` builds install signed updates in-app. `.deb` installs use the manifest's `linux-x86_64-deb` entry and ask for the admin password (pkexec) to run `dpkg -i`. Builds older than 0.0.2 open the release page for `.deb` installs instead. Development builds make no network update request.
+The client and the server release separately, each from its own repository. The monorepo does not release.
+
+| Repo | Tag | Workflow builds | Publishes |
+|------|-----|-----------------|-----------|
+| `nhridoy/terra-client` | `v<client version>` | Signed desktop apps for Windows, Linux (AppImage, `.deb`), macOS Intel and Apple Silicon | GitHub Release with `terra-latest.json` (the in-app update feed) |
+| `nhridoy/terra-server` | `v<server version>` | `go vet` and tests, Linux binaries for amd64 and arm64 | GitHub Release with both tarballs and `SHA256SUMS`, plus `ghcr.io/nhridoy/terra-server:<version>` for `linux/amd64` and `linux/arm64` |
+
+A tag with a `-` (such as `v0.1.0-beta.1`) becomes a prerelease. Prereleases do not move the server image's `latest` tag, and installed apps never see them as updates, because the updater reads GitHub's `/releases/latest`, which skips prereleases.
 
 ## One-time setup
 
-1. Keep the Terra Tauri updater **private** signing key outside Git. Its matching **public** key is embedded in `client/src-tauri/tauri.conf.json`. If reusing a previously generated updater key, first verify that its public key exactly matches Terra's configured key. Otherwise create and securely back up a Terra keypair, then configure its public key before release. After Terra has a signed release, treat key rotation as a migration rather than silently replacing the key.
-2. In the `Release` environment (Settings → Environments → Release), add secret `TAURI_SIGNING_PRIVATE_KEY` containing the private key file contents. Add `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` there if the key has a password. Never paste the key into a workflow, issue, log, or commit.
-3. No submodule token is needed: `terra-client` and `terra-server` are public, so CI rewrites the local `git@personal:` SSH alias to anonymous `https://github.com/` inside each fetch command.
-4. Set up Windows installer signing and macOS signing/notarization credentials before distributing those builds as production releases. Tauri updater signatures verify the downloaded update but do not replace operating-system trust checks. Add the platform-specific signing environment variables/secrets to the desktop build job when those identities are available.
-5. Keep the monorepo GitHub Release public if it is the public desktop update channel. For a private repository, unauthenticated desktop clients cannot fetch `terra-latest.json` from the Releases URL.
+### Client (`nhridoy/terra-client`)
 
-## Publish a release
+1. In Settings → Environments, create `Release`.
+2. Add secret `TAURI_SIGNING_PRIVATE_KEY` with the updater private key file contents. Add `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` only if the key has a password. The key's public half is embedded in `src-tauri/tauri.conf.json`; never replace it silently, because installed apps trust only that key.
+3. Add variable `VITE_API_URL` (the default server URL compiled into the app).
+4. Keep the repository public. Unauthenticated apps cannot read release assets from a private repository.
 
-The monorepo's `Release` workflow runs when a `v*` tag is pushed. It reads the exact client and server submodule commits recorded by that tag. Do not tag until those submodule commits are pushed and the monorepo points to them.
+### Server (`nhridoy/terra-server`)
 
-### Alpha release
+No secrets are needed; the workflow pushes to GHCR with its own `GITHUB_TOKEN`. If the `terra-server` package was first published from another repository, open the package's settings on GitHub → **Manage Actions access** and give `nhridoy/terra-server` the **Write** role, or the image push fails with `permission_denied`.
 
-1. Choose the next prerelease version, such as `0.0.1-alpha.1` (then `alpha.2`, `alpha.3`, etc.). Update the version in `client/src-tauri/tauri.conf.json`, `client/package.json`, and `client/src-tauri/Cargo.toml`; update the `terra` package entry in `client/src-tauri/Cargo.lock` to match.
-2. Commit and push the client version change to `main` in the private client repository.
-3. In the monorepo, update the client submodule pointer and commit/push the release workflow or README changes needed for the release. Check that `git submodule status` shows the intended client revision.
-4. Create and push the matching tag from the monorepo commit, for example:
+## Release the client
 
-   ```bash
-   git tag -a v0.0.1-alpha.1 -m "Terra 0.0.1-alpha.1"
-   git push origin v0.0.1-alpha.1
-   ```
-
-5. Monitor **Actions → Release**. The workflow checks the `Release` environment secret `TAURI_SIGNING_PRIVATE_KEY` and variable `VITE_API_URL`, then builds Windows, Linux, macOS Intel, macOS Apple Silicon, the server archive, and the versioned GHCR image. It publishes a GitHub prerelease; alpha Docker images are version-tagged and do not overwrite `latest`.
-6. Confirm the GitHub release is marked **Pre-release** and contains `terra-latest.json`, Windows NSIS `.exe`, macOS `.app.tar.gz` for both architectures, Linux `.AppImage`, installer bundles, signatures, and `terra-server-linux-amd64.tar.gz`. Confirm the versioned image exists at `ghcr.io/nhridoy/terra-server:0.0.1-alpha.1`.
-7. Download and manually install the alpha builds for testing. The app's configured updater endpoint follows GitHub's stable `/releases/latest` feed, so it does not offer prereleases as in-app updates.
-
-### Stable release
-
-1. Choose the next stable SemVer (for example, `1.0.0`) and update the same four client version locations listed above. Commit and push the client change, then update and push the monorepo's client submodule pointer.
-2. Review the tagged source and CI status, then create and push an annotated `v<version>` tag from the monorepo:
+1. Bump the version in `package.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml`, and the `terra` entry in `src-tauri/Cargo.lock`. The workflow stops if the tag differs from the `tauri.conf.json` version.
+2. Commit, push `main`, then tag and push:
 
    ```bash
-   git tag -a v1.0.0 -m "Terra 1.0.0"
-   git push origin v1.0.0
+   VERSION=0.0.3
+   git commit -am "chore(release): set version $VERSION"
+   git push origin main
+   git tag -a "v$VERSION" -m "Terra $VERSION"
+   git push origin "v$VERSION"
+   gh run watch
    ```
 
-3. Monitor **Actions → Release** until all jobs succeed. Stable releases are published as non-prereleases and update the `latest` GHCR tag.
-4. Check the same release assets and updater manifest listed above. The manifest's `platforms` entries must point to the exact assets and contain signature **contents**, not paths.
-5. Install a previous signed build and use Settings → Check for updates on Windows, macOS Intel/Apple Silicon, Linux AppImage, and Linux `.deb`. Confirm download progress, separate install action, relaunch, and displayed new version. For `.deb`, confirm the password prompt appears and `dpkg -l terra` shows the new version.
+3. Check the release has `terra-latest.json`, the Windows `.exe`, both macOS `.app.tar.gz` and `.dmg`, the Linux `.AppImage` and `.deb`, and a `.sig` for each updater bundle. The manifest has entries for `linux-x86_64` (AppImage), `linux-x86_64-deb`, `windows-x86_64`, `darwin-x86_64`, and `darwin-aarch64`.
+4. Install the previous build and use Settings → Check for updates. Confirm download progress, Restart & install, and the new version after relaunch. On `.deb`, confirm the password prompt and `dpkg -l terra`.
 
-Before public distribution, test an unavailable network and a deliberately invalid signature using a disposable test release/environment. The current app must remain usable. Do not alter production `terra-latest.json` merely to run this test.
+### Bridge for apps installed from the monorepo (0.0.2 and older)
 
-## Rollback and key loss
+Builds up to 0.0.2 read the update feed from the monorepo's latest release (`nhridoy/terra` `v0.0.2`). After the **first** client-repo release, copy its manifest there once. Those apps then update to the new build, which reads the client repo's feed from then on:
 
-The Tauri updater accepts only versions newer than the installed app. To recover from a bad release, publish a corrected release with a higher version. Do not replace a published asset or signature under the same version; cached manifests and clients may disagree. If the signing private key is compromised, stop publishing and issue a new installer with a new public key through a trusted manual channel. An installed build cannot trust a new updater key it never received.
+```bash
+VERSION=0.0.3
+gh release download "v$VERSION" -R nhridoy/terra-client -p terra-latest.json -D /tmp/terra-bridge
+gh release upload v0.0.2 -R nhridoy/terra /tmp/terra-bridge/terra-latest.json --clobber
+```
 
-The updater is independent of the self-hosted Terra server and does not send account, vault, or terminal data to GitHub. Terra installations use the `terra-latest.json` feed.
+## Release the server
+
+The server has no version file; the tag is the version.
+
+```bash
+git tag -a v0.0.3 -m "Terra server 0.0.3"
+git push origin v0.0.3
+gh run watch
+```
+
+Check the release has `terra-server-linux-amd64.tar.gz`, `terra-server-linux-arm64.tar.gz`, and `SHA256SUMS`, and that `docker manifest inspect ghcr.io/nhridoy/terra-server:0.0.3` lists both `linux/amd64` and `linux/arm64`.
+
+## Failed runs, rollback, and key loss
+
+If a run fails before the release is published, delete the tag, push the fix, and tag again:
+
+```bash
+git tag -d "v$VERSION"
+git push origin ":refs/tags/v$VERSION"
+```
+
+Never reuse a published version. The updater accepts only newer versions, so recover from a bad release by publishing a higher one. If the signing key is compromised, stop publishing and ship a new installer with a new public key through a trusted manual channel; installed builds cannot trust a key they never received.
