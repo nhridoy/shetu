@@ -5,7 +5,7 @@ The client and the server release separately, each from its own repository. The 
 | Repo | Tag | Workflow builds | Publishes |
 |------|-----|-----------------|-----------|
 | `nhridoy/terra-client` | `v<client version>` | Signed desktop apps for Windows (NSIS), Linux (AppImage, `.deb`), and macOS, each for x64 and ARM64 | GitHub Release with `terra-latest.json` (the in-app update feed) |
-| `nhridoy/terra-server` | `v<server version>` | `go vet` and tests, server binaries for Linux, macOS, and Windows, each for amd64 and arm64 | GitHub Release with the six archives and `SHA256SUMS`, plus `ghcr.io/nhridoy/terra-server:<version>` for `linux/amd64` and `linux/arm64` |
+| `nhridoy/terra-server` | `v<server version>` | `go vet` and tests, Linux server binaries for amd64 and arm64 | GitHub Release with both tarballs and `SHA256SUMS`, plus `ghcr.io/nhridoy/terra-server:<version>` for `linux/amd64` and `linux/arm64` |
 
 A tag with a `-` (such as `v0.1.0-beta.1`) becomes a prerelease. Prereleases do not move the server image's `latest` tag, and installed apps never see them as updates, because the updater reads GitHub's `/releases/latest`, which skips prereleases.
 
@@ -61,7 +61,7 @@ git push origin v0.0.3
 gh run watch
 ```
 
-Check the release has `terra-server-{linux,darwin}-{amd64,arm64}.tar.gz`, `terra-server-windows-{amd64,arm64}.zip`, and `SHA256SUMS`, and that `docker manifest inspect ghcr.io/nhridoy/terra-server:0.0.3` lists both `linux/amd64` and `linux/arm64`.
+Check the release has `terra-server-linux-amd64.tar.gz`, `terra-server-linux-arm64.tar.gz`, and `SHA256SUMS`, and that `docker manifest inspect ghcr.io/nhridoy/terra-server:0.0.3` lists both `linux/amd64` and `linux/arm64`.
 
 ## Failed runs, rollback, and key loss
 
