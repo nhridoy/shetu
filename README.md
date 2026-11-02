@@ -95,8 +95,8 @@ npx expo run:android
 
 The client and the server release separately, each from its own repository, by pushing a `v*` tag there:
 
-- **Client** (`nhridoy/terra-client`): builds the signed desktop apps and publishes the in-app update feed. The tag must match the version in `src-tauri/tauri.conf.json`.
-- **Server** (`nhridoy/terra-server`): runs the tests, publishes Linux binaries for amd64 and arm64, and pushes `ghcr.io/nhridoy/terra-server` for `linux/amd64` and `linux/arm64`.
+- **Client** (`nhridoy/terra-client`): builds the signed desktop apps for Windows, Linux, and macOS, each for x64 and ARM64, and publishes the in-app update feed. The tag must match the version in `src-tauri/tauri.conf.json`.
+- **Server** (`nhridoy/terra-server`): runs the tests, publishes binaries for Linux, macOS, and Windows (amd64 and arm64), and pushes `ghcr.io/nhridoy/terra-server` for `linux/amd64` and `linux/arm64`.
 
 Tags with a `-` (such as `v0.1.0-beta.1`) become prereleases, which installed apps do not offer as updates. See the [release runbook](docs/UPDATER_RELEASE_RUNBOOK.md) for one-time setup, release steps, and the one-time update bridge for apps installed from the monorepo.
 
