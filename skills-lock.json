@@ -19,6 +19,12 @@
       "skillPath": "skills/design/app-icon/SKILL.md",
       "computedHash": "81c801ab1f70048a11364a83fa5d8b4989a1a6407b3dab681a6242ee5c4d6aec"
     },
+    "apple-design": {
+      "source": "dickwu/apple-design-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "9581a1eeeb588b5e56a95ed12e2a2a65d8127b6d5ff1a4b7356ff6c4ca66731d"
+    },
     "bama": {
       "source": "daveebbelaar/bama",
       "sourceType": "github",
