@@ -23,13 +23,19 @@ Terra uses the same encryption as Termius:
 
 ## Download
 
-Get the desktop app from [terra-client releases](https://github.com/nhridoy/terra-client/releases/latest). On macOS, install with one line to skip the "cannot verify" warning (Terra is not notarized yet):
+Get the desktop app from [terra-client releases](https://github.com/nhridoy/terra-client/releases/latest), or install it with one command (no security warnings):
 
 ```bash
+# macOS or Linux
 curl -fsSL https://raw.githubusercontent.com/nhridoy/terra-client/main/install.sh | bash
 ```
 
-Or open the `.dmg` and approve it once in **System Settings → Privacy & Security → Open Anyway**.
+```powershell
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/nhridoy/terra-client/main/install.ps1 | iex
+```
+
+Downloaded the file yourself? Terra isn't signed by Apple or Microsoft yet. On macOS, approve it once in **System Settings → Privacy & Security → Open Anyway**. On Windows, click **More info → Run anyway**. See the [client README](https://github.com/nhridoy/terra-client#download) for details.
 
 ## Quick Start
 
