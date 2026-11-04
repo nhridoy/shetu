@@ -36,7 +36,7 @@ No secrets are needed; the workflow pushes to GHCR with its own `GITHUB_TOKEN`. 
    gh run watch
    ```
 
-3. Check the release has `terra-latest.json` and, for both x64 and ARM64, the Windows `.exe`, the macOS `.app.tar.gz` and `.dmg`, and the Linux `.AppImage` and `.deb`, with a `.sig` for each updater bundle. The manifest has entries for `linux-x86_64`, `linux-x86_64-deb`, `linux-aarch64`, `linux-aarch64-deb`, `windows-x86_64`, `windows-aarch64`, `darwin-x86_64`, and `darwin-aarch64`.
+3. Check the release has `terra-latest.json` and, for both x64 and ARM64 (Intel and Apple Silicon on macOS), named `Terra-<version>-<OS>-<CPU>`, the Windows `.exe`, the macOS `.app.tar.gz` and `.dmg`, and the Linux `.AppImage` and `.deb`, with a `.sig` for each updater bundle. The manifest has entries for `linux-x86_64`, `linux-x86_64-deb`, `linux-aarch64`, `linux-aarch64-deb`, `windows-x86_64`, `windows-aarch64`, `darwin-x86_64`, and `darwin-aarch64`.
 
    To test the builds without publishing, run the workflow by hand (`gh workflow run release.yml -R nhridoy/terra-client`); manual runs build every platform and skip the release.
 4. Install the previous build and use Settings → Check for updates. Confirm download progress, Restart & install, and the new version after relaunch. On `.deb`, confirm the password prompt and `dpkg -l terra`.
