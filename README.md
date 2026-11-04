@@ -21,6 +21,16 @@ Terra uses the same encryption as Termius:
 - **Encryption**: XSalsa20 + Poly1305 (libsodium)
 - **Key Derivation**: Argon2id (OPSLIMIT=2, MEMLIMIT=64MB)
 
+## Download
+
+Get the desktop app from [terra-client releases](https://github.com/nhridoy/terra-client/releases/latest). On macOS, install with one line to skip the "cannot verify" warning (Terra is not notarized yet):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/nhridoy/terra-client/main/install.sh | bash
+```
+
+Or open the `.dmg` and approve it once in **System Settings → Privacy & Security → Open Anyway**.
+
 ## Quick Start
 
 ### Desktop
