@@ -6,7 +6,7 @@ Thank you for your interest in contributing to Terra! This document provides gui
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 18+ and [Bun](https://bun.sh)
 - Go 1.21+
 - Rust (for Tauri)
 - Docker (optional)
@@ -15,8 +15,8 @@ Thank you for your interest in contributing to Terra! This document provides gui
 
 ```bash
 cd client
-pnpm install
-pnpm tauri dev
+bun install
+bun tauri dev
 ```
 
 ### Backend (Server)
@@ -61,7 +61,7 @@ npx expo start
 
 ```bash
 # Client tests
-cd client && pnpm vitest run
+cd client && bun run vitest run
 
 # Server tests
 cd server && go test ./...

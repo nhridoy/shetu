@@ -11,13 +11,13 @@ Open-source Termius alternative. Tauri v2 desktop + Go server. Local-first, encr
 
 ```bash
 # Client dev (starts Vite + Tauri)
-cd client && pnpm tauri dev
+cd client && bun tauri dev
 
 # Client lint
-cd client && pnpm biome check .
+cd client && bun run biome check .
 
 # Client test
-cd client && pnpm vitest
+cd client && bun run vitest run
 
 # Server dev (hot-reload via air)
 cd server && air
@@ -41,7 +41,7 @@ cd server && go test ./...
 
 ## Key Quirks
 
-- **pnpm only** — never npm
+- **bun only** — never pnpm or npm. CI runs `bun install --frozen-lockfile`, so dependency changes go through `bun add` and must update `bun.lock`
 - Tauri v2 uses ACL-based capabilities in `capabilities/default.json`
 - Tauri IPC errors appear as `tauri-error` header in network tab (non-zero value = error)
 - GORM AutoMigrate runs on server startup — no manual migration files

@@ -47,10 +47,10 @@ git clone https://github.com/nhridoy/terra.git
 cd terra
 
 # Install dependencies
-cd client && pnpm install
+cd client && bun install
 
 # Start development
-pnpm tauri dev
+bun tauri dev
 ```
 
 ### Server
