@@ -44,7 +44,7 @@ Not there yet: mobile apps, Mosh, Telnet and serial, and importing from Termius 
 
 ## Security
 
-Your vault is encrypted on your device before it is synced: **Argon2id** derives a key from your account password, and records are sealed with **XChaCha20-Poly1305**. Team vaults have their own keys, sealed to each member with **X25519** and rotated when a member is removed. The server stores ciphertext and never decrypts it; it can see record names, tags and timestamps, while host addresses, usernames, passwords, private keys and commands stay encrypted. SSH connects directly from the app to your servers.
+Your vault is encrypted on your device before it is synced: **Argon2id** derives a key from your account password, and records are sealed with **XChaCha20-Poly1305**. Team vaults have their own keys, sealed to each member with **X25519**; removing a member flags the vault for a key rotation, which an owner or admin completes with **Rotate keys**. The server stores ciphertext and never decrypts it; it can see record names, tags and timestamps, while host addresses, usernames, passwords, private keys and commands stay encrypted. SSH connects from the app straight to your servers, or through a jump host you choose.
 
 Details: [security reference](https://terra.iamnahid.com/docs/security). Report vulnerabilities privately through [GitHub Security Advisories](https://github.com/nhridoy/terra/security/advisories/new).
 
