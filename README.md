@@ -1,29 +1,56 @@
-# Terra
+<p align="center">
+  <img src="https://raw.githubusercontent.com/nhridoy/terra-client/main/src-tauri/icons/icon.png" width="96" height="96" alt="Terra app icon">
+</p>
 
-Open-source, self-hosted SSH client with 1-to-1 Termius encryption compatibility.
+<h1 align="center">Terra</h1>
+
+<p align="center">
+  The free, open-source SSH client for macOS, Windows and Linux, and a Termius alternative.<br>
+  Split terminals, SFTP, port forwarding and an encrypted vault you can sync through your own server.
+</p>
+
+<p align="center">
+  <a href="https://terra.iamnahid.com">Website</a> ·
+  <a href="https://terra.iamnahid.com/download">Download</a> ·
+  <a href="https://terra.iamnahid.com/docs">Docs</a> ·
+  <a href="https://terra.iamnahid.com/changelog">Changelog</a> ·
+  <a href="https://terra.iamnahid.com/termius-alternative">Terra vs Termius</a>
+</p>
+
+<p align="center">
+  <img src="https://terra.iamnahid.com/og/index.png" width="720" alt="Terra: free open-source SSH client and Termius alternative">
+</p>
+
+This is the project home. The code lives in three repositories, included here as Git submodules:
+
+| Repository | What it is |
+|---|---|
+| [terra-client](https://github.com/nhridoy/terra-client) | The desktop app: Tauri v2, Rust, React and TypeScript |
+| [terra-server](https://github.com/nhridoy/terra-server) | The sync server you can host yourself: Go, Gin, GORM, PostgreSQL |
+| [terra-web](https://github.com/nhridoy/terra-web) | The website and docs at [terra.iamnahid.com](https://terra.iamnahid.com): Astro |
 
 ## Features
 
-- **SSH Terminal**: Full terminal emulation with split views, tabs, and focus mode
-- **SFTP Browser**: Visual file management with drag-and-drop, preview, and transfer
-- **Vault**: Encrypted credential storage (hosts, keys, snippets)
-- **Port Forwarding**: Local, remote, and dynamic tunneling
-- **Team Collaboration**: Shared vaults, team management, session logging
-- **Desktop**: Windows, macOS, and Linux; the separate mobile app keeps its current identity
-- **Self-Hosted**: Full control over your data
+- **Terminal** with tabs, split panes, focus mode and a local shell; 36 themes and 8 terminal fonts
+- **Hosts** in nested groups with tags, colors and OS icons
+- **SFTP** with local and remote panes, drag and drop, chmod, chown and search
+- **Port forwarding:** local, remote and dynamic (SOCKS5)
+- **Keys:** generate Ed25519, RSA 4096 or ECDSA P-256, or import OpenSSH and PEM keys
+- **Editor** with about 20 languages, diffs, remote editing over SFTP and a Git panel
+- **Workspaces** that save and restore tab and pane layouts
+- **Encrypted sync and team vaults** through a Terra server, with owner, admin and member roles
 
-## Encryption
+Not there yet: mobile apps, Mosh, Telnet and serial, and importing from Termius or `~/.ssh/config`.
 
-Terra uses the same encryption as Termius:
+## Security
 
-- **Authentication**: SRP6a (2048-bit prime)
-- **Key Exchange**: X25519
-- **Encryption**: XSalsa20 + Poly1305 (libsodium)
-- **Key Derivation**: Argon2id (OPSLIMIT=2, MEMLIMIT=64MB)
+Your vault is encrypted on your device before it is synced: **Argon2id** derives a key from your account password, and records are sealed with **XChaCha20-Poly1305**. Team vaults have their own keys, sealed to each member with **X25519**; removing a member flags the vault for a key rotation, which an owner or admin completes with **Rotate keys**. The server stores ciphertext and never decrypts it; it can see record names, tags and timestamps, while host addresses, usernames, passwords, private keys and commands stay encrypted. SSH connects from the app straight to your servers, or through a jump host you choose.
+
+Details: [security reference](https://terra.iamnahid.com/docs/security). Report vulnerabilities privately through [GitHub Security Advisories](https://github.com/nhridoy/terra/security/advisories/new).
 
 ## Download
 
-Get the desktop app from [terra-client releases](https://github.com/nhridoy/terra-client/releases/latest), or install it with one command (no security warnings):
+Get the desktop app from the [download page](https://terra.iamnahid.com/download) or [terra-client releases](https://github.com/nhridoy/terra-client/releases/latest), or install it with one command:
 
 ```bash
 # macOS or Linux
@@ -35,178 +62,60 @@ curl -fsSL https://raw.githubusercontent.com/nhridoy/terra-client/main/install.s
 irm https://raw.githubusercontent.com/nhridoy/terra-client/main/install.ps1 | iex
 ```
 
-Downloaded the file yourself? Terra isn't signed by Apple or Microsoft yet. On macOS, approve it once in **System Settings → Privacy & Security → Open Anyway**. On Windows, click **More info → Run anyway**. See the [client README](https://github.com/nhridoy/terra-client#download) for details.
+Builds are not notarized by Apple or signed by Microsoft yet, so a file you download yourself shows a one-time warning. The [client README](https://github.com/nhridoy/terra-client#download) explains what to click.
 
-## Quick Start
+## Self-host the sync server
 
-### Desktop
+Sign-in and sync go through a Terra server. Run your own with Docker and PostgreSQL: see the [terra-server README](https://github.com/nhridoy/terra-server) and the [self-hosting guide](https://terra.iamnahid.com/docs/server).
 
-```bash
-# Clone
-git clone https://github.com/nhridoy/terra.git
-cd terra
+## Development
 
-# Install dependencies
-cd client && bun install
-
-# Start development
-bun tauri dev
-```
-
-### Server
+Each part has its own README with setup steps. To work on one, clone its repository directly:
 
 ```bash
-cd server
-
-# Install dependencies
-go mod download
-
-# Run server
-go run ./cmd/terra-server
+git clone https://github.com/nhridoy/terra-client.git   # desktop app (bun install && bun tauri dev)
+git clone https://github.com/nhridoy/terra-server.git   # server (go run ./cmd/terra-server)
+git clone https://github.com/nhridoy/terra-web.git      # website (pnpm install && pnpm dev)
 ```
 
-### Docker
+See [CONTRIBUTING.md](CONTRIBUTING.md) for prerequisites and conventions.
 
-The server image is published as `ghcr.io/nhridoy/terra-server` for `linux/amd64` and `linux/arm64`. Production uses `server/docker-compose.prod.yml`, which pulls that image and never builds. The file is self-contained, so a host only needs it and a `.env`:
+## Roadmap
 
-```bash
-cd server
-cp .env.example .env
-# Set JWT_SECRET, BASE_URL, and a production DATABASE_URL in .env.
-# Optionally pin a release with TERRA_IMAGE_TAG=0.0.3 (default: latest stable).
-docker compose -f docker-compose.prod.yml pull
-docker compose -f docker-compose.prod.yml up -d
-```
+What's planned, roughly in order. There are no dates, and priorities can change with feedback; [open an issue](https://github.com/nhridoy/terra/issues) to vote for something or suggest it.
 
-To build and run the image from your checkout instead, use the default `docker-compose.yml`. It reuses the production settings and tags the build `terra-server:local`:
+**Next**
 
-```bash
-docker compose up -d --build
-```
+- **Trust and polish:** sign and notarize the macOS and Windows builds so they install without warnings; a working "Delete all data" option in settings; repair the key type shown for SSH keys imported by older versions.
+- **Verification:** finish live two-device testing of sync, teams and shared vaults, session history, saved workspaces and the jump host on all three platforms.
+- **Productivity:** run snippets straight from the command palette, customizable keyboard shortcuts, and global SSH options in settings.
 
-SQLite is supported for local development. Production deployments must use PostgreSQL, for example:
+**Later**
 
-```dotenv
-DATABASE_URL=postgres://terra:change-me@db.example.com:5432/terra?sslmode=require
-```
+- **More ways to connect:** jump chains through more than one bastion, then Telnet, Mosh and serial connections, shaped by demand.
+- **Smarter terminal:** context-aware command autocomplete.
+- **Terra Cloud:** a hosted, managed sync option for people who'd rather not run a server.
 
-Compose publishes port `8080` by default (`TERRA_HTTP_PORT`). Put the server behind a TLS-terminating reverse proxy, then set `BASE_URL`, `TRUSTED_PROXIES`, and `TERRA_BIND_IP=127.0.0.1` as needed. The `terra-data` volume is only used by SQLite.
+**Exploring**
 
-### Mobile
+- **Mobile apps** for iOS and Android.
 
-```bash
-cd mobile
-
-# Install dependencies
-npm install
-
-# Run on iOS
-npx expo run:ios
-
-# Run on Android
-npx expo run:android
-```
+Done so far is in the [changelog](https://terra.iamnahid.com/changelog).
 
 ## Releases
 
 The client and the server release separately, each from its own repository, by pushing a `v*` tag there:
 
-- **Client** (`nhridoy/terra-client`): builds the signed desktop apps for Windows, Linux, and macOS, each for x64 and ARM64, and publishes the in-app update feed. The tag must match the version in `src-tauri/tauri.conf.json`.
+- **Client** (`nhridoy/terra-client`): builds the desktop apps for Windows, Linux and macOS, each for x64 and ARM64, and publishes the in-app update feed. The tag must match the version in `src-tauri/tauri.conf.json`.
 - **Server** (`nhridoy/terra-server`): runs the tests, publishes Linux binaries for amd64 and arm64, and pushes `ghcr.io/nhridoy/terra-server` for `linux/amd64` and `linux/arm64`.
 
-Tags with a `-` (such as `v0.1.0-beta.1`) become prereleases, which installed apps do not offer as updates. See the [release runbook](docs/UPDATER_RELEASE_RUNBOOK.md) for one-time setup, release steps, and the one-time update bridge for apps installed from the monorepo.
-
-## Configuration
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `TERRA_PORT` | Server port | `8080` |
-| `TERRA_HOST` | Server host | `0.0.0.0` |
-| `TERRA_APP_SCHEME` | Desktop OAuth app-scheme fallback | `terra` |
-| `TERRA_OAUTH_REDIRECT_URIS` | Allowed desktop OAuth loopback callbacks | `http://127.0.0.1:1421/oauth/callback,http://127.0.0.1:1422/oauth/callback,http://127.0.0.1:1423/oauth/callback` |
-| `DATABASE_URL` | Database connection (SQLite for dev, PostgreSQL for production) | `sqlite://terra.db` |
-| `JWT_SECRET` | JWT signing secret | Required |
-| `JWT_EXPIRY` | JWT token expiry | `15m` |
-| `BASE_URL` | Public URL | `http://localhost:8080` |
-
-The server accepts the Terra environment variable names above. The default SQLite database is `terra.db` for local development; production deployments should set `DATABASE_URL` to a `postgres://` connection string.
-
-### OAuth Providers
-
-| Provider | Variables |
-|----------|-----------|
-| GitHub | `OAUTH_GITHUB_CLIENT_ID`, `OAUTH_GITHUB_CLIENT_SECRET` |
-| Google | `OAUTH_GOOGLE_CLIENT_ID`, `OAUTH_GOOGLE_CLIENT_SECRET` |
-| GitLab | `OAUTH_GITLAB_CLIENT_ID`, `OAUTH_GITLAB_CLIENT_SECRET` |
-| Microsoft | `OAUTH_MICROSOFT_CLIENT_ID`, `OAUTH_MICROSOFT_CLIENT_SECRET` |
-
-## API Documentation
-
-### Authentication
-
-```bash
-# Register
-curl -X POST http://localhost:8080/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"password"}'
-
-# Login
-curl -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"password"}'
-```
-
-### Hosts
-
-```bash
-# List hosts
-curl -H "Authorization: Bearer <token>" http://localhost:8080/api/hosts
-
-# Create host
-curl -X POST http://localhost:8080/api/hosts \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"My Server","hostname":"192.168.1.100","port":22,"username":"root"}'
-```
-
-## Architecture
-
-```
-terra/
-├── server/           # Go API server + SSH proxy
-│   ├── cmd/         # Entry point
-│   ├── internal/    # Core logic
-│   └── Dockerfile
-├── client/          # Tauri v2 + React desktop app
-│   ├── src/        # React components
-│   └── src-tauri/  # Rust backend
-├── mobile/          # React Native app
-│   ├── src/        # Screens + stores
-│   └── App.tsx
-└── shared/          # Shared utils (encryption)
-```
-
-## Security
-
-- End-to-end encryption with Termius-compatible algorithms
-- Zero-knowledge architecture (server never sees plaintext)
-- Biometric authentication on mobile
-- Secure credential storage with libsodium
-
-## Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing`)
-5. Open Pull Request
-
-## License
-
-MIT License - see [LICENSE](LICENSE) for details.
+Tags with a `-` (such as `v0.1.0-beta.1`) become prereleases, which installed apps do not offer as updates. See the [release runbook](docs/UPDATER_RELEASE_RUNBOOK.md) for one-time setup and release steps.
 
 ## Support
 
-- GitHub Issues: https://github.com/nhridoy/terra/issues
+- Questions and bugs: [GitHub Issues](https://github.com/nhridoy/terra/issues)
+- Desktop app bugs (with logs): [terra-client issues](https://github.com/nhridoy/terra-client/issues/new?template=bug_report.yml)
+
+## License
+
+[MIT](LICENSE)
