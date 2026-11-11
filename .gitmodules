@@ -1,9 +1,9 @@
 [submodule "client"]
 	path = client
-	url = git@personal:nhridoy/terra-client.git
+	url = https://github.com/nhridoy/terra-client.git
 [submodule "server"]
 	path = server
-	url = git@personal:nhridoy/terra-server.git
+	url = https://github.com/nhridoy/terra-server.git
 [submodule "terra-web"]
 	path = terra-web
-	url = git@personal:nhridoy/terra-web.git
+	url = https://github.com/nhridoy/terra-web.git
