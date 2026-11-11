@@ -63,7 +63,7 @@
 **Files:**
 - Create: `server/internal/teams/sync.go` and focused tests
 - Modify: `server/internal/models/` (team-operation idempotency model and migration)
-- Modify: `server/cmd/terra-server/main.go`
+- Modify: `server/cmd/shetu-server/main.go`
 - Test: `server/internal/teams/sync_test.go`
 
 **Interfaces:**
@@ -72,7 +72,7 @@
 
 - [ ] **Step 1: Write failing handler tests.** Cover authorization, every operation's role checks, account-scoped snapshots, bounded batches, and cursor continuation.
 - [ ] **Step 2: Add idempotency tests.** Simulate the same operation ID twice, including retry after an accepted write, and assert one server-side mutation and a stable result.
-- [ ] **Step 3: Run focused Go tests and verify failure for the missing route/model.** Run `GOCACHE=/tmp/terra-go-cache go test ./internal/teams -run 'TestTeamSync'` from `server`.
+- [ ] **Step 3: Run focused Go tests and verify failure for the missing route/model.** Run `GOCACHE=/tmp/shetu-go-cache go test ./internal/teams -run 'TestTeamSync'` from `server`.
 - [ ] **Step 4: Implement the endpoint by reusing existing authorization/domain rules.** Apply each operation transactionally, record its result under `(user_id, operation_id)`, and return authoritative state without exposing other users' data.
 - [ ] **Step 5: Test cursor paging, malformed operations, stale recipient fingerprints, and oversized batches.** Require rejected operations to return structured per-operation errors without aborting unrelated valid operations in the same batch.
 - [ ] **Step 6: Run `go test ./internal/teams ./internal/models`, then `go test ./...` and `go vet ./...`.**
@@ -90,7 +90,7 @@
 - Exposes `run_team_sync(account_id: &str, db: &LocalDb, http: &HttpClient) -> Result<TeamSyncSummary, TeamSyncError>` in `team_sync.rs`; DTOs match **Shared Sync Contract**. `LocalDb` is the existing `client/src-tauri/src/db.rs` wrapper around `Mutex<rusqlite::Connection>`.
 - Calls only `POST /api/v1/teams/sync` through `HttpClient`.
 - Produces atomic application of accepted operation results and each snapshot page; advances that page's cursor in the same transaction. Network failures retain all unacknowledged outbox entries.
-- Emits the existing Terra sync-completion event only after the local transaction commits.
+- Emits the existing Shetu sync-completion event only after the local transaction commits.
 
 - [ ] **Step 1: Write failing coordinator tests.** Cover operation batching, continuation cursors, retry after network failure, per-account serialization, and no outbox deletion before acknowledgement.
 - [ ] **Step 2: Write failing key-epoch tests.** Verify same-epoch snapshots do not import an envelope again and higher epochs do.
@@ -133,5 +133,5 @@
 - [ ] **Step 1: Add manual checks for cold launch, offline reopen, offline edits, reconnection, member removal, stale key epochs, and account switching.**
 - [ ] **Step 2: Verify route visits make zero team API requests.** Confirm only the bounded Rust background sync endpoint appears after unlock/reconnect or explicit retry.
 - [ ] **Step 3: Exercise a rejected offline role/removal operation.** Confirm it remains visibly rejected/pending as appropriate and server authorization remains authoritative.
-- [ ] **Step 4: Run all available suites:** `cargo test --manifest-path src-tauri/Cargo.toml --lib`, `GOCACHE=/tmp/terra-go-cache go test ./...`, `GOCACHE=/tmp/terra-go-cache go vet ./...`, and `pnpm vitest run && pnpm biome check .`.
+- [ ] **Step 4: Run all available suites:** `cargo test --manifest-path src-tauri/Cargo.toml --lib`, `GOCACHE=/tmp/shetu-go-cache go test ./...`, `GOCACHE=/tmp/shetu-go-cache go vet ./...`, and `pnpm vitest run && pnpm biome check .`.
 - [ ] **Step 5: Review `git diff --check` at root and in both submodules.** Leave changes uncommitted and unpushed unless the user separately asks.

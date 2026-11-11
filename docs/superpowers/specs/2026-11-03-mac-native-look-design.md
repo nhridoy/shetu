@@ -2,7 +2,7 @@
 
 ## Intent
 
-Terra works, but it looks like a web page in a window: big web-sized buttons, a pointer cursor on everything, a 288px web sidebar, web-style modals, Windows-style window buttons even on a Mac, and no menu bar. This pass makes it look and feel like a Mac app on every platform, by retuning the existing Tailwind + shadcn-style components and the window shell. It is a reskin, not a rebuild: component names, variants, and props stay the same, so call sites don't change.
+Shetu works, but it looks like a web page in a window: big web-sized buttons, a pointer cursor on everything, a 288px web sidebar, web-style modals, Windows-style window buttons even on a Mac, and no menu bar. This pass makes it look and feel like a Mac app on every platform, by retuning the existing Tailwind + shadcn-style components and the window shell. It is a reskin, not a rebuild: component names, variants, and props stay the same, so call sites don't change.
 
 ## Decisions made by the owner
 
@@ -93,11 +93,11 @@ Mac source list, all platforms:
 
 Built in Rust in the Tauri `setup` hook under `#[cfg(target_os = "macos")]`, replacing Tauri's default macOS menu.
 
-- **Terra:** About Terra, Settings… (⌘,), Services, Hide Terra (⌘H), Hide Others (⌥⌘H), Show All, Quit Terra (⌘Q). All predefined items except Settings.
+- **Shetu:** About Shetu, Settings… (⌘,), Services, Hide Shetu (⌘H), Hide Others (⌥⌘H), Show All, Quit Shetu (⌘Q). All predefined items except Settings.
 - **File / View:** see the scope decision below.
 - **Edit:** predefined Undo, Redo, Cut, Copy, Paste, Select All. These must stay predefined so copy/paste keeps working in inputs; without an Edit menu, ⌘C/⌘V stop working in macOS webviews.
 - **Window:** predefined Minimize (⌘M), Zoom, Bring All to Front.
-- **Help:** Terra on GitHub (opens the repo URL via the existing opener).
+- **Help:** Shetu on GitHub (opens the repo URL via the existing opener).
 
 **Owner's scope decision: the menu holds only commands that work today.** The shortcut hook (`hooks/useKeyboardShortcuts.ts`) is mounted only in `TerminalView`, and its Save Workspace and Toggle Sidebar handlers are stubs. So the menu leaves out Save Workspace, Toggle Sidebar, Split, and Next/Previous Tab in this pass, and the File and View menus above shrink to:
 

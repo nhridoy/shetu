@@ -1,33 +1,34 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/nhridoy/terra-client/main/src-tauri/icons/icon.png" width="96" height="96" alt="Terra app icon">
+  <img src="https://raw.githubusercontent.com/nhridoy/shetu-client/main/src-tauri/icons/icon.png" width="96" height="96" alt="Shetu app icon">
 </p>
 
-<h1 align="center">Terra</h1>
+<h1 align="center">Shetu</h1>
 
 <p align="center">
   The free, open-source SSH client for macOS, Windows and Linux, and a Termius alternative.<br>
-  Split terminals, SFTP, port forwarding and an encrypted vault you can sync through your own server.
+  Split terminals, SFTP, port forwarding and an encrypted vault you can sync through your own server.<br>
+  <sub><i>Shetu</i> (সেতু) is Bengali for <i>bridge</i>. Say it SHAY-too.</sub>
 </p>
 
 <p align="center">
-  <a href="https://terra.iamnahid.com">Website</a> ·
-  <a href="https://terra.iamnahid.com/download">Download</a> ·
-  <a href="https://terra.iamnahid.com/docs">Docs</a> ·
-  <a href="https://terra.iamnahid.com/changelog">Changelog</a> ·
-  <a href="https://terra.iamnahid.com/termius-alternative">Terra vs Termius</a>
+  <a href="https://shetu.iamnahid.com">Website</a> ·
+  <a href="https://shetu.iamnahid.com/download">Download</a> ·
+  <a href="https://shetu.iamnahid.com/docs">Docs</a> ·
+  <a href="https://shetu.iamnahid.com/changelog">Changelog</a> ·
+  <a href="https://shetu.iamnahid.com/termius-alternative">Shetu vs Termius</a>
 </p>
 
 <p align="center">
-  <img src="https://terra.iamnahid.com/og/index.png" width="720" alt="Terra: free open-source SSH client and Termius alternative">
+  <img src="https://shetu.iamnahid.com/og/index.png" width="720" alt="Shetu: free open-source SSH client and Termius alternative">
 </p>
 
 This is the project home. The code lives in three repositories, included here as Git submodules:
 
 | Repository | What it is |
 |---|---|
-| [terra-client](https://github.com/nhridoy/terra-client) | The desktop app: Tauri v2, Rust, React and TypeScript |
-| [terra-server](https://github.com/nhridoy/terra-server) | The sync server you can host yourself: Go, Gin, GORM, PostgreSQL |
-| [terra-web](https://github.com/nhridoy/terra-web) | The website and docs at [terra.iamnahid.com](https://terra.iamnahid.com): Astro |
+| [shetu-client](https://github.com/nhridoy/shetu-client) | The desktop app: Tauri v2, Rust, React and TypeScript |
+| [shetu-server](https://github.com/nhridoy/shetu-server) | The sync server you can host yourself: Go, Gin, GORM, PostgreSQL |
+| [shetu-web](https://github.com/nhridoy/shetu-web) | The website and docs at [shetu.iamnahid.com](https://shetu.iamnahid.com): Astro |
 
 ## Features
 
@@ -38,7 +39,7 @@ This is the project home. The code lives in three repositories, included here as
 - **Keys:** generate Ed25519, RSA 4096 or ECDSA P-256, or import OpenSSH and PEM keys
 - **Editor** with about 20 languages, diffs, remote editing over SFTP and a Git panel
 - **Workspaces** that save and restore tab and pane layouts
-- **Encrypted sync and team vaults** through a Terra server, with owner, admin and member roles
+- **Encrypted sync and team vaults** through a Shetu server, with owner, admin and member roles
 
 Not there yet: mobile apps, Mosh, Telnet and serial, and importing from Termius or `~/.ssh/config`.
 
@@ -46,43 +47,43 @@ Not there yet: mobile apps, Mosh, Telnet and serial, and importing from Termius 
 
 Your vault is encrypted on your device before it is synced: **Argon2id** derives a key from your account password, and records are sealed with **XChaCha20-Poly1305**. Team vaults have their own keys, sealed to each member with **X25519**; removing a member flags the vault for a key rotation, which an owner or admin completes with **Rotate keys**. The server stores ciphertext and never decrypts it; it can see record names, tags and timestamps, while host addresses, usernames, passwords, private keys and commands stay encrypted. SSH connects from the app straight to your servers, or through a jump host you choose.
 
-Details: [security reference](https://terra.iamnahid.com/docs/security). Report vulnerabilities privately through [GitHub Security Advisories](https://github.com/nhridoy/terra/security/advisories/new).
+Details: [security reference](https://shetu.iamnahid.com/docs/security). Report vulnerabilities privately through [GitHub Security Advisories](https://github.com/nhridoy/shetu/security/advisories/new).
 
 ## Download
 
-Get the desktop app from the [download page](https://terra.iamnahid.com/download) or [terra-client releases](https://github.com/nhridoy/terra-client/releases/latest), or install it with one command:
+Get the desktop app from the [download page](https://shetu.iamnahid.com/download) or [shetu-client releases](https://github.com/nhridoy/shetu-client/releases/latest), or install it with one command:
 
 ```bash
 # macOS or Linux
-curl -fsSL https://raw.githubusercontent.com/nhridoy/terra-client/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/nhridoy/shetu-client/main/install.sh | bash
 ```
 
 ```powershell
 # Windows (PowerShell)
-irm https://raw.githubusercontent.com/nhridoy/terra-client/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/nhridoy/shetu-client/main/install.ps1 | iex
 ```
 
-Builds are not notarized by Apple or signed by Microsoft yet, so a file you download yourself shows a one-time warning. The [client README](https://github.com/nhridoy/terra-client#download) explains what to click.
+Builds are not notarized by Apple or signed by Microsoft yet, so a file you download yourself shows a one-time warning. The [client README](https://github.com/nhridoy/shetu-client#download) explains what to click.
 
 ## Self-host the sync server
 
-Sign-in and sync go through a Terra server. Run your own with Docker and PostgreSQL: see the [terra-server README](https://github.com/nhridoy/terra-server) and the [self-hosting guide](https://terra.iamnahid.com/docs/server).
+Sign-in and sync go through a Shetu server. Run your own with Docker and PostgreSQL: see the [shetu-server README](https://github.com/nhridoy/shetu-server) and the [self-hosting guide](https://shetu.iamnahid.com/docs/server).
 
 ## Development
 
 Each part has its own README with setup steps. To work on one, clone its repository directly:
 
 ```bash
-git clone https://github.com/nhridoy/terra-client.git   # desktop app (bun install && bun tauri dev)
-git clone https://github.com/nhridoy/terra-server.git   # server (go run ./cmd/terra-server)
-git clone https://github.com/nhridoy/terra-web.git      # website (pnpm install && pnpm dev)
+git clone https://github.com/nhridoy/shetu-client.git   # desktop app (bun install && bun tauri dev)
+git clone https://github.com/nhridoy/shetu-server.git   # server (go run ./cmd/shetu-server)
+git clone https://github.com/nhridoy/shetu-web.git      # website (pnpm install && pnpm dev)
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for prerequisites and conventions.
 
 ## Roadmap
 
-What's planned, roughly in order. There are no dates, and priorities can change with feedback; [open an issue](https://github.com/nhridoy/terra/issues) to vote for something or suggest it.
+What's planned, roughly in order. There are no dates, and priorities can change with feedback; [open an issue](https://github.com/nhridoy/shetu/issues) to vote for something or suggest it.
 
 **Next**
 
@@ -94,27 +95,27 @@ What's planned, roughly in order. There are no dates, and priorities can change 
 
 - **More ways to connect:** jump chains through more than one bastion, then Telnet, Mosh and serial connections, shaped by demand.
 - **Smarter terminal:** context-aware command autocomplete.
-- **Terra Cloud:** a hosted, managed sync option for people who'd rather not run a server.
+- **Shetu Cloud:** a hosted, managed sync option for people who'd rather not run a server.
 
 **Exploring**
 
 - **Mobile apps** for iOS and Android.
 
-Done so far is in the [changelog](https://terra.iamnahid.com/changelog).
+Done so far is in the [changelog](https://shetu.iamnahid.com/changelog).
 
 ## Releases
 
 The client and the server release separately, each from its own repository, by pushing a `v*` tag there:
 
-- **Client** (`nhridoy/terra-client`): builds the desktop apps for Windows, Linux and macOS, each for x64 and ARM64, and publishes the in-app update feed. The tag must match the version in `src-tauri/tauri.conf.json`.
-- **Server** (`nhridoy/terra-server`): runs the tests, publishes Linux binaries for amd64 and arm64, and pushes `ghcr.io/nhridoy/terra-server` for `linux/amd64` and `linux/arm64`.
+- **Client** (`nhridoy/shetu-client`): builds the desktop apps for Windows, Linux and macOS, each for x64 and ARM64, and publishes the in-app update feed. The tag must match the version in `src-tauri/tauri.conf.json`.
+- **Server** (`nhridoy/shetu-server`): runs the tests, publishes Linux binaries for amd64 and arm64, and pushes `ghcr.io/nhridoy/shetu-server` for `linux/amd64` and `linux/arm64`.
 
 Tags with a `-` (such as `v0.1.0-beta.1`) become prereleases, which installed apps do not offer as updates. See the [release runbook](docs/UPDATER_RELEASE_RUNBOOK.md) for one-time setup and release steps.
 
 ## Support
 
-- Questions and bugs: [GitHub Issues](https://github.com/nhridoy/terra/issues)
-- Desktop app bugs (with logs): [terra-client issues](https://github.com/nhridoy/terra-client/issues/new?template=bug_report.yml)
+- Questions and bugs: [GitHub Issues](https://github.com/nhridoy/shetu/issues)
+- Desktop app bugs (with logs): [shetu-client issues](https://github.com/nhridoy/shetu-client/issues/new?template=bug_report.yml)
 
 ## License
 

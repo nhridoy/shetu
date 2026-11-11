@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make Terra look and feel like a Mac app on every platform (Mac type, density, controls, toolbar, sidebar, dialogs), with drawn traffic lights and a native menu bar on macOS only.
+**Goal:** Make Shetu look and feel like a Mac app on every platform (Mac type, density, controls, toolbar, sidebar, dialogs), with drawn traffic lights and a native menu bar on macOS only.
 
 **Architecture:** Retune values inside the existing `client/src/components/ui/` components and global CSS (same names, variants, props). Restyle the shell (`layout/shell/*`, `layout/tabs/SortableTab.tsx`). App-wide commands go through one action channel (`lib/window/menuActions.ts`) that both the macOS menu (Tauri event) and in-app shortcuts (DOM event) feed, handled once in `Layout.tsx`.
 
@@ -238,7 +238,7 @@ it('marks only the current section and offers a labeled Log Out', () => {
   - `export const MENU_ACTION_IDS: readonly MenuActionId[]` (that order)
   - `export const MENU_ACTION_EVENT = 'menu-action';` (Tauri event name; payload is the id string)
   - `export function isMenuActionId(value: unknown): value is MenuActionId`
-  - `export function dispatchAppAction(id: MenuActionId): void` — `window.dispatchEvent(new CustomEvent('terra:app-action', { detail: id }))`
+  - `export function dispatchAppAction(id: MenuActionId): void` — `window.dispatchEvent(new CustomEvent('shetu:app-action', { detail: id }))`
   - `export function listenAppActions(handler: (id: MenuActionId) => void): () => void` — listens to the DOM event and, when `isTauriAvailable()`, to Tauri `listen(MENU_ACTION_EVENT)`; ignores unknown ids; returns one unsubscribe that tears down both (handle the async Tauri unlisten like `WindowControls` does today).
   - `export function isMenuOwnedShortcut(e: Pick<KeyboardEvent, 'metaKey' | 'ctrlKey' | 'altKey' | 'shiftKey' | 'key'>, mac: boolean): boolean` — true only when `mac && e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey` and `e.key.toLowerCase()` is one of `t`, `w`, `k`, `,`.
 - Produces in `terminalStore`: `closeActivePane: () => string | null` — removes the active tab's active pane via existing `removePane` (which already drops the tab when its last pane closes) and returns the resulting `activeTabId` (`null` when no tabs remain or nothing was active).
@@ -310,17 +310,17 @@ it('closes the focused pane, then the tab, then returns null', () => {
 - Produces: `#[cfg(target_os = "macos")] pub fn install(app: &tauri::App) -> tauri::Result<()>` in `menu.rs`, which builds and sets the menu and registers `app.on_menu_event`.
 
 - [ ] **Step 1:** `menu.rs`: build with `MenuBuilder` / `SubmenuBuilder` (Tauri 2.12):
-  - **Terra:** `about` (title "About Terra"), separator, `MenuItemBuilder::with_id("settings", "Settings…").accelerator("Cmd+,")`, separator, `services`, separator, `hide`, `hide_others`, `show_all`, separator, `quit`.
+  - **Shetu:** `about` (title "About Shetu"), separator, `MenuItemBuilder::with_id("settings", "Settings…").accelerator("Cmd+,")`, separator, `services`, separator, `hide`, `hide_others`, `show_all`, separator, `quit`.
   - **File:** `new-tab` "New Tab" `Cmd+T`; `quick-connect` "Quick Connect…" `Cmd+K`; separator; `close-tab` "Close Tab" `Cmd+W`.
   - **Edit:** predefined `undo`, `redo`, separator, `cut`, `copy`, `paste`, `select_all`.
   - **View:** predefined `fullscreen`.
   - **Window:** predefined `minimize`, `maximize` (shows as Zoom); add `bring_all_to_front` only if the Tauri 2.12 builder exposes it, else skip.
-  - **Help:** `help-github` "Terra on GitHub".
-  - Event handler: for ids in `["settings","new-tab","quick-connect","close-tab"]` → `app.emit("menu-action", id)`; `help-github` → `app.opener().open_url("https://github.com/nhridoy/terra", None::<&str>)` (`tauri_plugin_opener::OpenerExt`).
+  - **Help:** `help-github` "Shetu on GitHub".
+  - Event handler: for ids in `["settings","new-tab","quick-connect","close-tab"]` → `app.emit("menu-action", id)`; `help-github` → `app.opener().open_url("https://github.com/nhridoy/shetu", None::<&str>)` (`tauri_plugin_opener::OpenerExt`).
 - [ ] **Step 2:** `lib.rs` setup: `#[cfg(target_os = "macos")] menu::install(app)?;` after the window lookup. Declare `mod menu;` near the other `mod` lines.
 - [ ] **Step 3:** In `menuActions.test.ts` change the Rust-id `it.todo` to `it`; run → PASS.
 - [ ] **Step 4: Verify.** `cargo check` on Linux (the module compiles out; confirm no unused-import warnings in `lib.rs`), full JS checks. If a Mac is available, or via the CI dry-run release build installed on a Mac, walk this checklist and report results to the owner:
-  - menu bar shows Terra / File / Edit / View / Window / Help
+  - menu bar shows Shetu / File / Edit / View / Window / Help
   - ⌘, opens Settings; ⌘T, ⌘K, ⌘W each act **once** from Hosts, SFTP, Editor, Terminal (⌘W does nothing outside Terminal)
   - ⌘C/⌘V/⌘A/⌘Z work in a text field (host form, Quick Connect)
   - SFTP: ⌘C/⌘V on files still work; if not, apply the spec §6 fallback (SFTP listens to DOM `copy`/`cut`/`paste`) and re-check

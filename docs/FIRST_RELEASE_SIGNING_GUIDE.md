@@ -1,10 +1,10 @@
-# First Terra Release: Signing and Release Setup
+# First Shetu Release: Signing and Release Setup
 
 **Checked against the repository on 2026-10-04.** This runbook describes the current `release.yml` workflow and the additional work and credentials needed for a properly signed public desktop release. Provider pages and certificate requirements can change; verify current instructions before purchasing or issuing certificates.
 
 ## Current readiness
 
-The release workflow already builds Windows x64, Linux x64, macOS Intel, and macOS Apple silicon artifacts. It signs updater bundles with Tauri's updater key and verifies those signatures while creating `terra-latest.json`.
+The release workflow already builds Windows x64, Linux x64, macOS Intel, and macOS Apple silicon artifacts. It signs updater bundles with Tauri's updater key and verifies those signatures while creating `shetu-latest.json`.
 
 The workflow is **not yet ready for a fully publisher-signed first release**:
 
@@ -27,13 +27,13 @@ Do not push the first `v*` tag until the required secrets are set, the missing o
 
 There are no separate Linux builds for different distributions or Ubuntu versions. The `.deb` declares runtime package dependencies in `tauri.conf.json`; the AppImage is the more portable Linux download. Linux ARM, Windows ARM, RPM, Flatpak, Snap, and Arch packages are not produced.
 
-The release job also publishes a Linux amd64 server tarball. The Docker job pushes `ghcr.io/nhridoy/terra-server:latest` and `ghcr.io/nhridoy/terra-server:<version>` to GitHub Container Registry (GHCR).
+The release job also publishes a Linux amd64 server tarball. The Docker job pushes `ghcr.io/nhridoy/shetu-server:latest` and `ghcr.io/nhridoy/shetu-server:<version>` to GitHub Container Registry (GHCR).
 
 ## The signing layers
 
 Treat these as separate controls:
 
-1. **Tauri updater signature:** proves that an updater bundle matches the private key corresponding to the public key embedded in the app. The private key must remain secret. `terra-latest.json` carries the literal signatures and URLs for Windows x64, Linux x64, macOS Intel, and macOS Apple silicon.
+1. **Tauri updater signature:** proves that an updater bundle matches the private key corresponding to the public key embedded in the app. The private key must remain secret. `shetu-latest.json` carries the literal signatures and URLs for Windows x64, Linux x64, macOS Intel, and macOS Apple silicon.
 2. **Operating-system publisher signing:** identifies the publisher to Windows and macOS trust systems. It is separate from the Tauri updater signature. For direct macOS distribution, Developer ID signing and notarization are required for the expected Gatekeeper experience. Windows signing identifies the publisher, though a newly signed app may still receive a SmartScreen reputation warning until it builds reputation.
 3. **Linux/manual-download integrity:** users need a verifiable signature or checksum for manual downloads such as `.deb` and the server archive. The current workflow does not publish a general signed checksum manifest. AppImage's embedded GPG signature is optional and AppImage itself does not automatically validate it; a separate verifier is needed. Keep the Tauri updater signature as the required in-app update check.
 4. **Container provenance:** GHCR authentication lets CI push images; it does not sign or attest to them. Add image signing/attestations separately if signed container provenance is part of the release promise.
@@ -44,24 +44,24 @@ Never reuse an OS publisher certificate as the Tauri updater key. Keep the updat
 
 ### GitHub repository and Actions
 
-The release workflow lives in the monorepo `nhridoy/terra`; add repository secrets there, not just in `terra-client` or `terra-server`. You need repository admin access to manage secrets and write access to push release tags.
+The release workflow lives in the monorepo `nhridoy/shetu`; add repository secrets there, not just in `shetu-client` or `shetu-server`. You need repository admin access to manage secrets and write access to push release tags.
 
 Add these current-workflow secrets under **Settings → Secrets and variables → Actions → Secrets → New repository secret**:
 
 | Secret | Required for | How to obtain it |
 |---|---|---|
-| `SUBMODULE_READ_TOKEN` | Fetch the private `terra-client` and `terra-server` submodules | Create a fine-grained personal access token, or use a GitHub App token. Grant access only to `nhridoy/terra-client` and `nhridoy/terra-server`, with repository **Contents: Read-only** permission. Confirm it can clone both repositories. Set an expiration and document who renews it. |
+| `SUBMODULE_READ_TOKEN` | Fetch the private `shetu-client` and `shetu-server` submodules | Create a fine-grained personal access token, or use a GitHub App token. Grant access only to `nhridoy/shetu-client` and `nhridoy/shetu-server`, with repository **Contents: Read-only** permission. Confirm it can clone both repositories. Set an expiration and document who renews it. |
 | `TAURI_SIGNING_PRIVATE_KEY` | Sign all desktop updater bundles | Use the private key that matches `plugins.updater.pubkey` in `client/src-tauri/tauri.conf.json`. Obtain it from the maintainer's secure backup. Do not create a replacement unless you are also intentionally rotating the public key in the app and have confirmed no released version depends on the existing key. |
 | `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Unlock the updater key, if it was generated with a password | The password chosen when the key pair was generated. Leave unset only if the private key has no password. |
 `GITHUB_TOKEN` is provided by GitHub Actions automatically. The Docker job grants it `packages: write` to publish to GHCR; the publish job grants it `contents: write` to create the GitHub Release. No Docker Hub account or registry token is needed. Do not create a personal token for either workflow step.
 
-To check configured **names** without exposing values, use `gh secret list --repo nhridoy/terra`. GitHub will not reveal an existing secret's value. Add or rotate a value through the repository Settings page. Keep a private inventory of owner, purpose, expiry, and rotation procedure; never paste values into issues, chat, or source files.
+To check configured **names** without exposing values, use `gh secret list --repo nhridoy/shetu`. GitHub will not reveal an existing secret's value. Add or rotate a value through the repository Settings page. Keep a private inventory of owner, purpose, expiry, and rotation procedure; never paste values into issues, chat, or source files.
 
 ### Tauri updater key
 
-Terra uses the updater public key in `client/src-tauri/tauri.conf.json`; the release manifest builder uses it to validate generated updater signatures. The matching Terra private key is required for every release. Confirm that the key backup exists and that a maintainer knows its password before tagging. A previously used updater key is valid only if it matches Terra's configured public key exactly.
+Shetu uses the updater public key in `client/src-tauri/tauri.conf.json`; the release manifest builder uses it to validate generated updater signatures. The matching Shetu private key is required for every release. Confirm that the key backup exists and that a maintainer knows its password before tagging. A previously used updater key is valid only if it matches Shetu's configured public key exactly.
 
-Terra has a new desktop bundle identifier and separate local database/keychain namespace. It installs as a separate application and leaves existing local app data untouched. Terra's server defaults to a separate `terra.db` SQLite file; deployments can choose another file with `DATABASE_URL`. The server API and encrypted data formats remain compatible.
+Shetu has a new desktop bundle identifier and separate local database/keychain namespace. It installs as a separate application and leaves existing local app data untouched. Shetu's server defaults to a separate `shetu.db` SQLite file; deployments can choose another file with `DATABASE_URL`. The server API and encrypted data formats remain compatible.
 
 If the matching private key is lost and **no public release has been made**, create a replacement pair using the Tauri v2 signer instructions, update the public key in `tauri.conf.json`, and provision the new private key/password before the first public tag. After users install a release trusting a public key, losing its private key prevents normal future updates. A key rotation after publication needs a bridge release or a separate manual migration plan.
 
@@ -104,17 +104,17 @@ For AppImage embedded GPG signing, provision a dedicated GPG signing key and con
 
 ## GitHub Actions environment setup
 
-1. Open `https://github.com/nhridoy/terra` → **Settings → Secrets and variables → Actions**.
+1. Open `https://github.com/nhridoy/shetu` → **Settings → Secrets and variables → Actions**.
 2. Add the current-workflow secrets above. Make sure the submodule token can read both private submodule repositories.
 3. Keep publisher-signing values in a protected `production` GitHub Environment if the workflow is updated to declare that environment. Add required reviewers and deployment branch/tag restrictions there. Currently `release.yml` does not declare an Environment, so environment-only secrets would not be available unless the workflow is changed.
 4. Check that Actions are enabled for the repository and that the workflow permission to create releases is enabled. The workflow already requests `contents: write` in the publish job.
-5. The first successful workflow run creates the GHCR package `terra-server`. Open the package settings and make it public if unauthenticated downloads are intended. Public GHCR container packages can be pulled without signing in; private packages require package read access.
+5. The first successful workflow run creates the GHCR package `shetu-server`. Open the package settings and make it public if unauthenticated downloads are intended. Public GHCR container packages can be pulled without signing in; private packages require package read access.
 6. After adding signing jobs, test the credentials with a controlled release candidate or a non-publishing validation workflow. Do not use a real stable tag as a credentials test: the current workflow promotes its draft to a public release automatically.
 
-For a package that already exists, open the package's **Package settings → Manage Actions access** and grant `nhridoy/terra` access to publish it. Set visibility to **Public** if the server image should be downloadable without authentication. Self-hosters can then run:
+For a package that already exists, open the package's **Package settings → Manage Actions access** and grant `nhridoy/shetu` access to publish it. Set visibility to **Public** if the server image should be downloadable without authentication. Self-hosters can then run:
 
 ```bash
-docker pull ghcr.io/nhridoy/terra-server:latest
+docker pull ghcr.io/nhridoy/shetu-server:latest
 ```
 
 CI uses the workflow's short-lived `GITHUB_TOKEN`; it does not require a GHCR username/token secret. People pulling a private image need a GitHub token with `read:packages` and permission to access the package.
@@ -143,12 +143,12 @@ The preflight check requires the pushed tag to exactly match `client/src-tauri/t
 6. Create an annotated version tag at the reviewed commit and push it. For example, when the config version is `1.0.0`:
 
    ```bash
-   git tag -a v1.0.0 -m "Terra v1.0.0"
+   git tag -a v1.0.0 -m "Shetu v1.0.0"
    git push origin v1.0.0
    ```
 
 7. Watch **Actions → Release**. Confirm preflight/version check, all four desktop matrix entries, server packaging, manifest signature verification, GHCR image push, and GitHub Release publication all succeed.
-8. Open the published GitHub Release and inspect every asset. Confirm `terra-latest.json` contains all four platform keys and correct release URLs; each updater bundle has a `.sig`; the `.deb`, server tarball, and Docker image have the separately documented integrity/provenance evidence.
+8. Open the published GitHub Release and inspect every asset. Confirm `shetu-latest.json` contains all four platform keys and correct release URLs; each updater bundle has a `.sig`; the `.deb`, server tarball, and Docker image have the separately documented integrity/provenance evidence.
 9. Download each artifact from the public release and repeat the clean-machine installation/update checks. Publish user-facing release notes only after these checks.
 
 The Docker job completes before the GitHub Release is published. A failed GHCR push blocks publication, keeping the server container and desktop/server release outputs aligned.
@@ -167,11 +167,11 @@ The Docker job completes before the GitHub Release is published. A failed GHCR p
 
 ### After the workflow finishes
 
-- [ ] `linux-x86_64`, `windows-x86_64`, `darwin-x86_64`, and `darwin-aarch64` are present in `terra-latest.json`.
+- [ ] `linux-x86_64`, `windows-x86_64`, `darwin-x86_64`, and `darwin-aarch64` are present in `shetu-latest.json`.
 - [ ] Each manifest signature verifies with the public key embedded in the installed app.
-- [ ] Downloaded installers are signed by Terra's expected publisher identity; macOS Gatekeeper accepts the notarized app.
+- [ ] Downloaded installers are signed by Shetu's expected publisher identity; macOS Gatekeeper accepts the notarized app.
 - [ ] Every published file matches the signed checksum manifest, including `.deb`, server archive, and release metadata where applicable.
-- [ ] `ghcr.io/nhridoy/terra-server` has `latest` and version tags, its digest corresponds to the reviewed server submodule commit, and package visibility matches the intended public/private distribution.
+- [ ] `ghcr.io/nhridoy/shetu-server` has `latest` and version tags, its digest corresponds to the reviewed server submodule commit, and package visibility matches the intended public/private distribution.
 - [ ] No private signing key, password, `.p12`, `.p8`, PAT, or Docker token appears in Git history, release assets, or Actions logs.
 
 ## Secret handling and recovery
