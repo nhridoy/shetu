@@ -86,7 +86,7 @@ What's planned, roughly in order. There are no dates, and priorities can change 
 
 **Next**
 
-- **Trust and polish:** sign and notarize the macOS and Windows builds so they install without warnings; a working "Delete all data" option in settings; repair the key type shown for SSH keys imported before v0.0.15.
+- **Trust and polish:** sign and notarize the macOS and Windows builds so they install without warnings; a working "Delete all data" option in settings; repair the key type shown for SSH keys imported by older versions.
 - **Verification:** finish live two-device testing of sync, teams and shared vaults, session history, saved workspaces and the jump host on all three platforms.
 - **Productivity:** run snippets straight from the command palette, customizable keyboard shortcuts, and global SSH options in settings.
 
