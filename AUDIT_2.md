@@ -1,4 +1,4 @@
-# Terra — 2nd Comprehensive Audit
+# Shetu — 2nd Comprehensive Audit
 
 ## Verdict
 

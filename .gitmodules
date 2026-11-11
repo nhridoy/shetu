@@ -1,9 +1,9 @@
 [submodule "client"]
 	path = client
-	url = https://github.com/nhridoy/terra-client.git
+	url = https://github.com/nhridoy/shetu-client.git
 [submodule "server"]
 	path = server
-	url = https://github.com/nhridoy/terra-server.git
-[submodule "terra-web"]
-	path = terra-web
-	url = https://github.com/nhridoy/terra-web.git
+	url = https://github.com/nhridoy/shetu-server.git
+[submodule "shetu-web"]
+	path = shetu-web
+	url = https://github.com/nhridoy/shetu-web.git

@@ -44,7 +44,7 @@
 - [ ] **Step 1: Write Rust tests for installation classification.** A Linux process with `APPIMAGE` set returns `appimage`; Linux without it returns `package`; non-Linux desktop returns `native`; debug mode returns `development`. Factor a pure classifier so tests do not mutate process environment.
 - [ ] **Step 2: Run `cargo test --no-default-features --lib update::tests` and observe red.**
 - [ ] **Step 3: Implement the classifier and command**, register it in the Tauri invoke handler, initialize `tauri-plugin-updater` and `tauri-plugin-process`, and grant only needed ACL permissions.
-- [ ] **Step 4: Generate a new Tauri updater key pair with `pnpm tauri signer generate --ci --write-keys <secure path outside repo>`; use only its public key in `tauri.conf.json`.** Put the private key in a local user-owned path with restrictive permissions for GitHub secret provisioning, never in source, tool output, or logs. Replace the placeholder endpoint with `https://github.com/nhridoy/terra/releases/latest/download/latest.json`; set `bundle.createUpdaterArtifacts` to `true`.
+- [ ] **Step 4: Generate a new Tauri updater key pair with `pnpm tauri signer generate --ci --write-keys <secure path outside repo>`; use only its public key in `tauri.conf.json`.** Put the private key in a local user-owned path with restrictive permissions for GitHub secret provisioning, never in source, tool output, or logs. Replace the placeholder endpoint with `https://github.com/nhridoy/shetu/releases/latest/download/latest.json`; set `bundle.createUpdaterArtifacts` to `true`.
 - [ ] **Step 5: Run the focused Rust tests and `cargo check --no-default-features`; confirm the configuration parses.**
 
 ### Task 2: Update service and state transitions

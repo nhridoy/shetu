@@ -1,10 +1,10 @@
-# Terra — Agent Instructions
+# Shetu — Agent Instructions
 
 Open-source Termius alternative. Tauri v2 desktop + Go server. Local-first, encrypted, self-hostable.
 
 ## Repository layout
 
-- This repo is the monorepo shell (docs, specs, workflows). `client/` and `server/` are git submodules pointing at `git@personal:nhridoy/terra-client.git` and `git@personal:nhridoy/terra-server.git`, with full history preserved via subtree splits.
+- This repo is the monorepo shell (docs, specs, workflows). `client/` and `server/` are git submodules pointing at `git@personal:nhridoy/shetu-client.git` and `git@personal:nhridoy/shetu-server.git`, with full history preserved via subtree splits.
 - After cloning the superproject: `git submodule update --init --recursive`.
 
 ## Commands
@@ -23,7 +23,7 @@ cd client && bun run vitest run
 cd server && air
 
 # Server dev (no hot-reload)
-cd server && go run ./cmd/terra-server
+cd server && go run ./cmd/shetu-server
 
 # Server vet
 cd server && go vet ./...
@@ -78,9 +78,9 @@ cd server && go test ./...
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `TERRA_PORT` | Server port | `8080` |
-| `TERRA_HOST` | Bind address | `0.0.0.0` |
-| `DATABASE_URL` | DB connection string | `sqlite://terra.db` |
+| `SHETU_PORT` | Server port | `8080` |
+| `SHETU_HOST` | Bind address | `0.0.0.0` |
+| `DATABASE_URL` | DB connection string | `sqlite://shetu.db` |
 | `JWT_SECRET` | JWT signing secret | Required |
 | `JWT_EXPIRY` | Access token lifetime | `15m` |
 | `REFRESH_TOKEN_EXPIRY` | Refresh token lifetime | `720h` (30d) |
@@ -90,13 +90,13 @@ cd server && go test ./...
 | `RATE_LIMIT_API` | Requests/min for sync/refresh | `30` |
 | `TRUSTED_PROXIES` | Comma-separated CIDRs of reverse proxies | empty (no proxy) |
 | `CORS_ALLOWED_ORIGINS` | Comma-separated allowed browser origins (Tauri webview + dev) | `http://localhost:1420, http://127.0.0.1:1420, http://tauri.localhost, tauri://localhost` |
-| `TERRA_APP_SCHEME` | OAuth app-scheme fallback | `terra` |
+| `SHETU_APP_SCHEME` | OAuth app-scheme fallback | `shetu` |
 | `OAUTH_REDIRECT_BASE` | Public base URL for provider callbacks | `BASE_URL` |
 | `OAUTH_GOOGLE_CLIENT_ID` | Google OAuth client ID | empty (Google login disabled) |
 | `OAUTH_GOOGLE_CLIENT_SECRET` | Google OAuth client secret | empty |
 | `OAUTH_GITHUB_CLIENT_ID` | GitHub OAuth client ID | empty (GitHub login disabled) |
 | `OAUTH_GITHUB_CLIENT_SECRET` | GitHub OAuth client secret | empty |
-| `TERRA_OAUTH_REDIRECT_URIS` | Comma-separated allowlist of desktop app loopback callback URIs | `http://127.0.0.1:142{1,2,3}/oauth/callback` |
+| `SHETU_OAUTH_REDIRECT_URIS` | Comma-separated allowlist of desktop app loopback callback URIs | `http://127.0.0.1:142{1,2,3}/oauth/callback` |
 
 | `REQUIRE_EMAIL_VERIFICATION` | Require OTP email verification for password signups (`true`/`1`/`yes`) | `false` (off) |
 | `LOG_OTP_FALLBACK` | DEV ONLY: log OTPs to console when SMTP unset (server refuses to start with verification on + no SMTP unless set) | `false` |
@@ -106,7 +106,7 @@ cd server && go test ./...
 | `SMTP_PASSWORD` | SMTP auth password | empty |
 | `SMTP_FROM` | From address for verification emails | empty |
 
-Terra uses `terra.db` when `DATABASE_URL` is unset. When set, `DATABASE_URL` is used directly without filename discovery or migration.
+Shetu uses `shetu.db` when `DATABASE_URL` is unset. When set, `DATABASE_URL` is used directly without filename discovery or migration.
 
 ### Client
 

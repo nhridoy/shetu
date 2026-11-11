@@ -1,6 +1,6 @@
-# Contributing to Terra
+# Contributing to Shetu
 
-Thank you for your interest in contributing to Terra! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to Shetu! This document provides guidelines and information for contributors.
 
 ## Development Setup
 
@@ -24,7 +24,7 @@ bun tauri dev
 ```bash
 cd server
 go mod download
-go run ./cmd/terra-server
+go run ./cmd/shetu-server
 ```
 
 ### Mobile

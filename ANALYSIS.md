@@ -1,4 +1,4 @@
-# Terra — Production Readiness Analysis
+# Shetu — Production Readiness Analysis
 
 > Generated: 2026-07-20
 > Verdict: **NOT production ready. Significant gaps remain.**
@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-Terra has a solid foundation — the UI is comprehensive, the encryption architecture is sound (Argon2id + ChaCha20Poly1305, zero-knowledge server), and the Rust/Go split is well-structured. However, the project has **critical missing features**, **architectural issues**, and **code quality problems** that prevent it from being a viable Termius alternative today.
+Shetu has a solid foundation — the UI is comprehensive, the encryption architecture is sound (Argon2id + ChaCha20Poly1305, zero-knowledge server), and the Rust/Go split is well-structured. However, the project has **critical missing features**, **architectural issues**, and **code quality problems** that prevent it from being a viable Termius alternative today.
 
 **What works well:**
 - UI/UX is polished with 30+ themes, drag-and-drop panes, split terminals
@@ -31,7 +31,7 @@ Terra has a solid foundation — the UI is comprehensive, the encryption archite
 
 ### ✅ Implemented (Partial or Full)
 
-| Feature | Termius | Terra | Status |
+| Feature | Termius | Shetu | Status |
 |---------|---------|-----------|--------|
 | SSH terminal | Full | Full | ✅ Working |
 | SFTP file browser | Full | Full | ✅ Working |
@@ -256,7 +256,7 @@ Terra has a solid foundation — the UI is comprehensive, the encryption archite
 
 ## 6. Termius Feature Gap Analysis
 
-To be a true Termius alternative, Terra needs these features prioritized:
+To be a true Termius alternative, Shetu needs these features prioritized:
 
 ### P0 — Must Have (Core SSH Client)
 1. ✅ SSH terminal with PTY
@@ -350,7 +350,7 @@ To be a true Termius alternative, Terra needs these features prioritized:
 
 ## 9. What's Actually Good
 
-Despite the gaps, Terra has genuine strengths:
+Despite the gaps, Shetu has genuine strengths:
 
 1. **Encryption architecture** — Argon2id + ChaCha20Poly1305 with zero-knowledge server is industry-leading
 2. **UI polish** — 30 themes, drag-and-drop panes, split terminals — matches Termius UX
