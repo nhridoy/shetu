@@ -80,6 +80,28 @@ git clone https://github.com/nhridoy/terra-web.git      # website (pnpm install 
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for prerequisites and conventions.
 
+## Roadmap
+
+What's planned, roughly in order. There are no dates, and priorities can change with feedback; [open an issue](https://github.com/nhridoy/terra/issues) to vote for something or suggest it.
+
+**Next**
+
+- **Trust and polish:** sign and notarize the macOS and Windows builds so they install without warnings; a working "Delete all data" option in settings; repair the key type shown for SSH keys imported before v0.0.15.
+- **Verification:** finish live two-device testing of sync, teams and shared vaults, session history, saved workspaces and the jump host on all three platforms.
+- **Productivity:** run snippets straight from the command palette, customizable keyboard shortcuts, and global SSH options in settings.
+
+**Later**
+
+- **More ways to connect:** jump chains through more than one bastion, then Telnet, Mosh and serial connections, shaped by demand.
+- **Smarter terminal:** context-aware command autocomplete.
+- **Terra Cloud:** a hosted, managed sync option for people who'd rather not run a server.
+
+**Exploring**
+
+- **Mobile apps** for iOS and Android.
+
+Done so far is in the [changelog](https://terra.iamnahid.com/changelog).
+
 ## Releases
 
 The client and the server release separately, each from its own repository, by pushing a `v*` tag there:
